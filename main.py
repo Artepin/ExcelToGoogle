@@ -1,16 +1,20 @@
-# This is a sample Python script.
+import httplib2
+import apiclient.discovery
+from oauth2client.service_account import ServiceAccountCredentials
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+CREDENTIALS_FILE = 'seraphic-effect-248407-7ac2c44ec709.json'  # Имя файла с закрытым ключом, вы должны подставить свое
 
+# Читаем ключи из файла
+credentials = ServiceAccountCredentials.from_json_keyfile_name(CREDENTIALS_FILE, ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive'])
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+httpAuth = credentials.authorize(httplib2.Http()) # Авторизуемся в системе
+service = apiclient.discovery.build('sheets', 'v4', http = httpAuth) # Выбираем работу с таблицами и 4 версию API
 
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+spreadsheet = service.spreadsheets().create(body = {
+    'properties': {'title': 'Первый тестовый документ', 'locale': 'ru_RU'},
+    'sheets': [{'properties': {'sheetType': 'GRID',
+                               'sheetId': 0,
+                               'title': 'Лист номер один',
+                               'gridProperties': {'rowCount': 100, 'columnCount': 15}}}]
+}).execute()р файла
+print('https://docs.google.com/spreadsheets/d/' + spreadsheetId)
