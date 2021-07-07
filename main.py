@@ -3,7 +3,7 @@ import httplib2
 import apiclient.discovery
 from oauth2client.service_account import ServiceAccountCredentials	
 
-CREDENTIALS_FILE = 'seraphic-effect-248407-7ac2c44ec709.json'  # Имя файла с закрытым ключом, вы должны подставить свое
+CREDENTIALS_FILE = 'woven-catwalk-319011-6951c37150c4.json'  # Имя файла с закрытым ключом, вы должны подставить свое
 
 # Читаем ключи из файла
 credentials = ServiceAccountCredentials.from_json_keyfile_name(CREDENTIALS_FILE, ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive'])
