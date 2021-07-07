@@ -10,4 +10,3 @@ credentials = ServiceAccountCredentials.from_json_keyfile_name(CREDENTIALS_FILE,
 
 httpAuth = credentials.authorize(httplib2.Http()) # Авторизуемся в системе
 service = apiclient.discovery.build('sheets', 'v4', http = httpAuth) # Выбираем работу с таблицами и 4 версию API
-
