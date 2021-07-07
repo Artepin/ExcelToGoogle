@@ -1,16 +1,13 @@
-# This is a sample Python script.
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+import httplib2
+import apiclient.discovery
+from oauth2client.service_account import ServiceAccountCredentials
 
+CREDENTIALS_FILE = 'woven-catwalk-319011-6951c37150c4.json'  # Имя файла с закрытым ключом, вы должны подставить свое
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+# Читаем ключи из файла
+credentials = ServiceAccountCredentials.from_json_keyfile_name(CREDENTIALS_FILE, ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive'])
 
+httpAuth = credentials.authorize(httplib2.Http()) # Авторизуемся в системе
+service = apiclient.discovery.build('sheets', 'v4', http = httpAuth) # Выбираем работу с таблицами и 4 версию API
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
