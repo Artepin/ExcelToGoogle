@@ -20,3 +20,10 @@ spreadsheet = service.spreadsheets().create(body = {
 }).execute()
 spreadsheetId = spreadsheet['spreadsheetId'] # сохраняем идентификатор файла
 print('https://docs.google.com/spreadsheets/d/' + spreadsheetId)
+
+driveService = apiclient.discovery.build('drive', 'v3', http = httpAuth) # Выбираем работу с Google Drive и 3 версию API
+access = driveService.permissions().create(
+    fileId = spreadsheetId,
+    body = {'type': 'user', 'role': 'writer', 'emailAddress': 'artemkozlov68@gmail.com'},  # Открываем доступ на редактирование
+    fields = 'id'
+).execute()
