@@ -56,14 +56,14 @@ class Exlib:
         sheet_id = Exlib.sheetid
         sheet = file.worksheets[sheet_id]
         width = sheet.column_dimensions[column].width
-        return width
+        return width*7.1
 
     def getHeight(self, cell1):
         file = Exlib.fileread
         sheet_id = Exlib.sheetid
         sheet = file.worksheets[sheet_id]
         height = sheet.row_dimensions[cell1].height
-        return height
+        return height*1.34
 
     ################<<STYLES>>##################
 

@@ -131,11 +131,15 @@ for i in range(len(mergedlist)):
     #print(str(mergedlist[i]))
     ss.prepare_mergeCells(str(mergedlist[i]))
 
-for column in range(1,columns+1):
-    ss.prepare_setColumnWidth(column, int(el.getWidth(el.columnLetter(column))))
+for col in range(1,columns+1):
+    print(el.getWidth(el.columnLetter(col)))
+    ss.prepare_setColumnWidth(col-1, int(el.getWidth(el.columnLetter(col))))
+print (rows)
+print (columns)
 
-for row in range(1,rows+1):
-    ss.prepare_setRowHeight(row, int(el.getHeight(row)))
+for rw in range(1,rows+1):
+    print(int(el.getHeight(rw)))
+    ss.prepare_setRowHeight(rw-1, int(el.getHeight(rw)))
 
 # тут запись подготовленных значений в google
 pprint(ss.requests)
