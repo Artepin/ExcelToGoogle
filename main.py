@@ -10,7 +10,9 @@ from spreadsheetgoogle import *
 def htmlColorToJSON(htmlColor):
     if htmlColor.startswith("#"):
         htmlColor = htmlColor[1:]
-    return {"red": 1 - int(htmlColor[0:2], 16) / 255.0, "green": 1 - int(htmlColor[2:4], 16) / 255.0, "blue": 1 - int(htmlColor[4:6], 16) / 255.0}
+    if htmlColor == "000000":
+        return {"red": 1, "green": 1, "blue": 1}
+    return {"red": int(htmlColor[0:2], 16) / 255.0, "green": int(htmlColor[2:4], 16) / 255.0, "blue": int(htmlColor[4:6], 16) / 255.0}
 
 
 path = ('test.xlsx')
@@ -58,17 +60,19 @@ access = driveService.permissions().create(
 # первичная настройка
 ss = Spreadsheet(CREDENTIALS_FILE, debugMode=True)
 ss.create("Первый тестовый документ", "Лист номер один")
-ss.shareWithEmailForWriting("mr.koshara01@gmail.com")
+ss.shareWithEmailForWriting("dennerblack02@gmail.com")
 # подготовка значений для отправки(формирование таблицы)
-print(1)
-for column in range(1,columns):
+
+for column in range(1,columns+1):
     column_letter = el.columnLetter(column)
-    for row in range(1,rows):
+    for row in range(1,rows+1):
         cord = column_letter + str(row)  # return 'A1' (A1 к примеру)
         cords = (column_letter + str(row)+":"+column_letter + str(row)) # return 'A1:A1'
         print(cords)
         print(htmlColorToJSON(el.bgColor(cord)))
-        ss.prepare_setValues(cords, el.getNumber(cord))
+        print(el.getNumber(cord))
+        if el.getNumber(cord) != 'None':
+            ss.prepare_setValues(cords, [[el.getNumber(cord)]])
         ss.prepare_setCellsFormat(cords, {"backgroundColor": htmlColorToJSON(el.bgColor(cord))}, fields="userEnteredFormat.backgroundColor")
 
 
