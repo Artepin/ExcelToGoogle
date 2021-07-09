@@ -79,6 +79,14 @@ class Exlib:
         column = get_column_letter(columnnum)
         return (column)
 
+    def getMerged(self):
+        merged = []
+        file = Exlib.fileread
+        sheet_id = Exlib.sheetid
+        sheet = file.worksheets[sheet_id]
+        mergedlist = sheet.merged_cells.ranges
+        return mergedlist
+
     ################<<STYLES>>##################
 
     def getFont(self, cell1):

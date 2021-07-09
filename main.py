@@ -26,6 +26,7 @@ el.sheetID(sheetid)
 rows = el.getRows()
 columns = el.getColumns()
 
+""" тестовая часть
 font = el.getFont('A1')
 print(font)
 fontsize = el.getFontSize('A1')
@@ -39,7 +40,6 @@ print(st)
 undr = el.getUnderline('A1')
 print(undr)
 
-""" тестовая часть
 print(rows,"*",columns)
 print(el.bgColorRed('A1'))
 print(el.bgColorGreen('A1'))
@@ -78,15 +78,14 @@ ss.create("Первый тестовый документ", "Лист номер
 # лучше по id чтобы не создавать каждый раз новый документ
 ss.setSpreadsheetById('1hvvyvbc6u9S06e2X4k29pipSZvVNNK4715Txzodyo04')
 
+mergedlist = el.getMerged()
+
 # подготовка значений для отправки(формирование таблицы)
 for column in range(1,columns+1):
     column_letter = el.columnLetter(column)
     for row in range(1,rows+1):
         cord = column_letter + str(row)  # return 'A1' (A1 к примеру)
         cords = (column_letter + str(row)+":"+column_letter + str(row)) # return 'A1:A1'
-        print(htmlColorToJSON(el.bgColor(cord)))
-        #ss.prepare_setCellsFormat(cords, {"backgroundColor": htmlColorToJSON(el.bgColor(cord))}, fields="userEnteredFormat.backgroundColor")
-
         bodyJSON = {"backgroundColor": htmlColorToJSON(el.bgColor(cord)), 'textFormat': {'fontFamily': el.getFont(cord),
                                    'fontSize': el.getFontSize(cord),
                                    'bold': el.getBold(cord),
@@ -97,8 +96,8 @@ for column in range(1,columns+1):
         ss.prepare_setCellsFormat(cords,bodyJSON)
         if el.getNumber(cord) != 'None':
             ss.prepare_setValues(cords, [[el.getNumber(cord)]])
-
-
+for i in range(len(mergedlist)):
+    ss.prepare_mergeCells(str(mergedlist[i]))
 
 # тут запись подготовленных значений в google
 pprint(ss.requests)
