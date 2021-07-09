@@ -2,6 +2,7 @@ import openpyxl
 #import pyexcel
 from openpyxl.worksheet.properties import WorksheetProperties, PageSetupProperties
 from openpyxl.styles import PatternFill, Border, Side, Alignment, Protection, Font
+from openpyxl.utils import get_column_letter
 
 class Exlib:
 
@@ -62,5 +63,19 @@ class Exlib:
         ret = ((val[2:8]).format(3))
         return(ret)
 
+    def getNumber(self, cell1):
+        file = Exlib.fileread
+        sheet_id = Exlib.sheetid
+        sheet = file.worksheets[sheet_id]
+        cell = sheet[cell1]
+        number = cell.value
+        return(number)
+
+    def columnLetter(self, columnnum):
+        file = Exlib.fileread
+        sheet_id = Exlib.sheetid
+        sheet = file.worksheets[sheet_id]
+        column = get_column_letter(columnnum)
+        return (column)
 
 el = Exlib()
