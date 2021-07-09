@@ -25,6 +25,20 @@ el.sheetID(sheetid)
 # получаем общее количиство строк и столбцев
 rows = el.getRows()
 columns = el.getColumns()
+
+font = el.getFont('A1')
+print(font)
+fontsize = el.getFontSize('A1')
+print(fontsize)
+bold = el.getBold('A1')
+print(bold)
+ital = el.getItalic('A1')
+print(ital)
+st = el.getStrikethrough('A1')
+print(st)
+undr = el.getUnderline('A1')
+print(undr)
+
 """ тестовая часть
 print(rows,"*",columns)
 print(el.bgColorRed('A1'))
@@ -59,21 +73,30 @@ access = driveService.permissions().create(
 
 # первичная настройка
 ss = Spreadsheet(CREDENTIALS_FILE, debugMode=True)
-ss.create("Первый тестовый документ", "Лист номер один")
-ss.shareWithEmailForWriting("dennerblack02@gmail.com")
-# подготовка значений для отправки(формирование таблицы)
+ss.create("Первый тестовый документ", "Лист номер один", rows, columns)
+#ss.shareWithEmailForWriting("dennerblack02@gmail.com")
+# лучше по id чтобы не создавать каждый раз новый документ
+ss.setSpreadsheetById('1hvvyvbc6u9S06e2X4k29pipSZvVNNK4715Txzodyo04')
 
+# подготовка значений для отправки(формирование таблицы)
 for column in range(1,columns+1):
     column_letter = el.columnLetter(column)
     for row in range(1,rows+1):
         cord = column_letter + str(row)  # return 'A1' (A1 к примеру)
         cords = (column_letter + str(row)+":"+column_letter + str(row)) # return 'A1:A1'
-        print(cords)
         print(htmlColorToJSON(el.bgColor(cord)))
-        print(el.getNumber(cord))
+        #ss.prepare_setCellsFormat(cords, {"backgroundColor": htmlColorToJSON(el.bgColor(cord))}, fields="userEnteredFormat.backgroundColor")
+
+        bodyJSON = {"backgroundColor": htmlColorToJSON(el.bgColor(cord)), 'textFormat': {'fontFamily': el.getFont(cord),
+                                   'fontSize': el.getFontSize(cord),
+                                   'bold': el.getBold(cord),
+                                   'italic': el.getItalic(cord),
+                                   'strikethrough': el.getStrikethrough(cord),
+                                   'underline': el.getUnderline(cord)}
+                    }
+        ss.prepare_setCellsFormat(cords,bodyJSON)
         if el.getNumber(cord) != 'None':
             ss.prepare_setValues(cords, [[el.getNumber(cord)]])
-        ss.prepare_setCellsFormat(cords, {"backgroundColor": htmlColorToJSON(el.bgColor(cord))}, fields="userEnteredFormat.backgroundColor")
 
 
 

@@ -3,6 +3,7 @@ import openpyxl
 from openpyxl.worksheet.properties import WorksheetProperties, PageSetupProperties
 from openpyxl.styles import PatternFill, Border, Side, Alignment, Protection, Font
 from openpyxl.utils import get_column_letter
+from openpyxl.styles import Font
 
 class Exlib:
 
@@ -77,5 +78,56 @@ class Exlib:
         sheet = file.worksheets[sheet_id]
         column = get_column_letter(columnnum)
         return (column)
+
+    ################<<STYLES>>##################
+
+    def getFont(self, cell1):
+        file = Exlib.fileread
+        sheet_id = Exlib.sheetid
+        sheet = file.worksheets[sheet_id]
+        cell = sheet[cell1]
+        font = cell.font.name
+        return font
+
+    def getFontSize(self, cell1):
+        file = Exlib.fileread
+        sheet_id = Exlib.sheetid
+        sheet = file.worksheets[sheet_id]
+        cell = sheet[cell1]
+        fontsize = cell.font.size
+        return int(fontsize)
+
+    def getBold(self, cell1):
+        file = Exlib.fileread
+        sheet_id = Exlib.sheetid
+        sheet = file.worksheets[sheet_id]
+        cell = sheet[cell1]
+        boldstatus = cell.font.bold
+        return bool(boldstatus)
+
+    def getItalic(self, cell1):
+        file = Exlib.fileread
+        sheet_id = Exlib.sheetid
+        sheet = file.worksheets[sheet_id]
+        cell = sheet[cell1]
+        italicstatus = cell.font.italic
+        return bool(italicstatus)
+
+    def getStrikethrough(self, cell1):
+        file = Exlib.fileread
+        sheet_id = Exlib.sheetid
+        sheet = file.worksheets[sheet_id]
+        cell = sheet[cell1]
+        ststatus = cell.font.strikethrough
+        return bool(ststatus)
+
+    def getUnderline(self, cell1):
+        file = Exlib.fileread
+        sheet_id = Exlib.sheetid
+        sheet = file.worksheets[sheet_id]
+        cell = sheet[cell1]
+        undrlstatus = bool(cell.font.underline)
+        if undrlstatus != False:
+            return True
 
 el = Exlib()
