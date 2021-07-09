@@ -28,42 +28,6 @@ class Exlib:
         sheet = file.worksheets[sheet_id]
         return(sheet.max_column)
 
-    def bgColorRed(self, cell1):
-        file = Exlib.fileread
-        sheet_id = Exlib.sheetid
-        sheet = file.worksheets[sheet_id]
-        cell = sheet[cell1]
-        val = cell.fill.start_color.index
-        redvalue = (int(val[2:2+2], 16))
-        return(redvalue)
-
-    def bgColorGreen(self, cell1):
-        file = Exlib.fileread
-        sheet_id = Exlib.sheetid
-        sheet = file.worksheets[sheet_id]
-        cell = sheet[cell1]
-        val = cell.fill.start_color.index
-        greenvalue = (int(val[4:4+2], 16))
-        return(greenvalue)
-
-    def bgColorBlue(self, cell1):
-        file = Exlib.fileread
-        sheet_id = Exlib.sheetid
-        sheet = file.worksheets[sheet_id]
-        cell = sheet[cell1]
-        val = cell.fill.start_color.index
-        bluevalue = (int(val[6:6+2], 16))
-        return(bluevalue)
-
-    def bgColor(self, cell1):
-        file = Exlib.fileread
-        sheet_id = Exlib.sheetid
-        sheet = file.worksheets[sheet_id]
-        cell = sheet[cell1]
-        val = cell.fill.start_color.index
-        ret = ((val[2:8]).format(3))
-        return(ret)
-
     def getNumber(self, cell1):
         file = Exlib.fileread
         sheet_id = Exlib.sheetid
@@ -87,6 +51,20 @@ class Exlib:
         mergedlist = sheet.merged_cells.ranges
         return mergedlist
 
+    def getWidth(self, column):
+        file = Exlib.fileread
+        sheet_id = Exlib.sheetid
+        sheet = file.worksheets[sheet_id]
+        width = sheet.column_dimensions[column].width
+        return width
+
+    def getHeight(self, cell1):
+        file = Exlib.fileread
+        sheet_id = Exlib.sheetid
+        sheet = file.worksheets[sheet_id]
+        height = sheet.row_dimensions[cell1].height
+        return height
+
     ################<<STYLES>>##################
 
     def getFont(self, cell1):
@@ -104,6 +82,18 @@ class Exlib:
         cell = sheet[cell1]
         fontsize = cell.font.size
         return int(fontsize)
+
+    def getFontColor(self, cell1):
+        file = Exlib.fileread
+        sheet_id = Exlib.sheetid
+        sheet = file.worksheets[sheet_id]
+        cell = sheet[cell1]
+        if len(str(cell.font.color.rgb))==8:
+            fcolor = str(cell.font.color.rgb)
+            ret = (fcolor[2:8])
+        else:
+            return False
+        return ret
 
     def getBold(self, cell1):
         file = Exlib.fileread
@@ -137,5 +127,42 @@ class Exlib:
         undrlstatus = bool(cell.font.underline)
         if undrlstatus != False:
             return True
+
+    def bgColorRed(self, cell1):
+        file = Exlib.fileread
+        sheet_id = Exlib.sheetid
+        sheet = file.worksheets[sheet_id]
+        cell = sheet[cell1]
+        val = cell.fill.start_color.index
+        redvalue = (int(val[2:2 + 2], 16))
+        return (redvalue)
+
+    def bgColorGreen(self, cell1):
+        file = Exlib.fileread
+        sheet_id = Exlib.sheetid
+        sheet = file.worksheets[sheet_id]
+        cell = sheet[cell1]
+        val = cell.fill.start_color.index
+        greenvalue = (int(val[4:4 + 2], 16))
+        return (greenvalue)
+
+    def bgColorBlue(self, cell1):
+        file = Exlib.fileread
+        sheet_id = Exlib.sheetid
+        sheet = file.worksheets[sheet_id]
+        cell = sheet[cell1]
+        val = cell.fill.start_color.index
+        bluevalue = (int(val[6:6 + 2], 16))
+        return (bluevalue)
+
+    def bgColor(self, cell1):
+        file = Exlib.fileread
+        sheet_id = Exlib.sheetid
+        sheet = file.worksheets[sheet_id]
+        cell = sheet[cell1]
+        val = cell.fill.start_color.index
+        ret = ((val[2:8]).format(3))
+        return (ret)
+
 
 el = Exlib()
