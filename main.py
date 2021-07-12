@@ -4,7 +4,7 @@ import apiclient.discovery
 from oauth2client.service_account import ServiceAccountCredentials
 from exellib import *
 from spreadsheetgoogle import *
-
+import numpy as np
 
 # одключил класс чела из той статьи, перенесу в отдельную библиотеку чуть позже
 def htmlColorToJSON(htmlColor):
@@ -78,8 +78,7 @@ access = driveService.permissions().create(
     fields = 'id'
 ).execute()
 """
-
-
+border_controller = np.zeros((columns+1, rows+1, 4))
 
 # первичная настройка
 ss = Spreadsheet(CREDENTIALS_FILE, debugMode=True)
@@ -91,9 +90,9 @@ ss.setSpreadsheetById('1pRohAKGYrcuRjKoZqByzzRB-eTlx6wvOrGM-nnUR0No')
 mergedlist = el.getMerged()
 
 # подготовка значений для отправки(формирование таблицы)
-for column in range(1,columns): # как поправишь границы, не забудь добавить +1
+for column in range(1,columns+1): # как поправишь границы, не забудь добавить +1
     column_letter = el.columnLetter(column)
-    for row in range(1,rows):
+    for row in range(1,rows+1):
         cord = column_letter + str(row)  # return 'A1' (A1 к примеру)
         cords = (column_letter + str(row)+":"+column_letter + str(row)) # return 'A1:A1'
         color = {"red": 0, "green": 0, "blue": 0}
@@ -119,15 +118,23 @@ for column in range(1,columns): # как поправишь границы, не
             ss.prepare_setValues(cords, [[el.getNumber(cord)]])
 
         for orient in range(len(borders)):
-            print(borders[orient])
-            border = {'updateBorders': {'range':
-                                            {'sheetId': ss.sheetId,
-                                             'startRowIndex': row-1,
-                                             'endRowIndex': row,
-                                             'startColumnIndex': column-1,
-                                             'endColumnIndex': column},
-                                        str(borders[orient]): el.getBorder(cord,borders[orient])}}
-            ss.requests.append(border)
+            check_unit = {
+                0: border_controller[column - 1][row][2],
+                1: border_controller[column][row - 1][3],
+                2: border_controller[column - 1][row - 2][0],
+                3: border_controller[column - 2][row - 1][1],
+            }
+            if check_unit[orient] != 1:
+                print(borders[orient])
+                border = {'updateBorders': {'range':
+                                                {'sheetId': ss.sheetId,
+                                                 'startRowIndex': row - 1,
+                                                 'endRowIndex': row,
+                                                 'startColumnIndex': column - 1,
+                                                 'endColumnIndex': column},
+                                            str(borders[orient]): el.getBorder(cord, borders[orient])}}
+                ss.requests.append(border)
+            border_controller[column - 1][row - 1][orient] = 1
 
 format = [{'values':
       [{'userEnteredValue': {'stringValue': 'Ячейка C2'},
