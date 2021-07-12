@@ -4,6 +4,9 @@ from openpyxl.worksheet.properties import WorksheetProperties, PageSetupProperti
 from openpyxl.styles import PatternFill, Border, Side, Alignment, Protection, Font
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import Font
+from openpyxl.styles import PatternFill, Border, Side, Alignment, Protection, Font
+
+
 
 class Exlib:
 
@@ -44,7 +47,6 @@ class Exlib:
         return (column)
 
     def getMerged(self):
-        merged = []
         file = Exlib.fileread
         sheet_id = Exlib.sheetid
         sheet = file.worksheets[sheet_id]
@@ -62,8 +64,13 @@ class Exlib:
         file = Exlib.fileread
         sheet_id = Exlib.sheetid
         sheet = file.worksheets[sheet_id]
-        height = sheet.row_dimensions[cell1].height
-        return height*1.34
+        try:
+            sheet.row_dimensions[cell1].height*1.34
+        except TypeError:
+            height = 21
+        else:
+            height = sheet.row_dimensions[cell1].height*1.34
+        return height
 
     ################<<STYLES>>##################
 
@@ -160,9 +167,181 @@ class Exlib:
         sheet_id = Exlib.sheetid
         sheet = file.worksheets[sheet_id]
         cell = sheet[cell1]
-        val = cell.fill.start_color.index
-        ret = ((val[2:8]).format(3))
-        return (ret)
+        #val = str(cell.fill.start_color.rgb)
+        if len(str(cell.fill.start_color.rgb))==8:
+            val = str(cell.fill.start_color.rgb)
+            ret = (val[2:8])
+        else:
+            return False
+        return ret
+
+    ################<<BORDERS>>##################
+
+    def getBorder(self, cell1, border_orientation):
+        file = Exlib.fileread
+        sheet_id = Exlib.sheetid
+        sheet = file.worksheets[sheet_id]
+        cell = sheet[cell1]
+        
+        if border_orientation == "top":
+            try:
+                cell.border.top.color.rgb
+            except AttributeError:
+                clr = {}
+            else:
+                if len(str(cell.border.top.color.rgb))==8:
+                    val = str(cell.border.top.color.rgb)
+                    col = (val[2:8])
+                    if col == "000000":
+                        clr = {"red": 1, "green": 1, "blue": 1}
+                    else:
+                        clr = {"red": int(col[0:2], 16) / 255.0, "green": int(col[2:4], 16) / 255.0,
+                            "blue": int(col[4:6], 16) / 255.0}
+                else:
+                    clr = {}
+            border_unit = {
+                'thin': "SOLID",
+                'medium': "SOLID_MEDIUM",
+                'thick': "SOLID_THICK",
+                'dashed': "DASHED",
+                'dotted': "DOTTED",
+                'double': "DOUBLE",
+                'dashDotDot': "DOTTED",
+                'mediumDashDotDot': "DOTTED",
+                'slantDashDot': "dashed",
+                'mediumDashDot': "dashed",
+                'mediumDashed': "dashed",
+                'dashDot': "dashed",
+                'hair': "DOTTED",
+                'None': "NONE"
+            }
+            try:
+                cell.border.top.border_style
+            except AttributeError:
+                st = 'NONE'
+            else:
+                st = border_unit[str(cell.border.top.border_style)]
+
+        if border_orientation == "right":
+            try:
+                cell.border.right.color.rgb
+            except AttributeError:
+                clr = {}
+            else:
+                if len(str(cell.border.right.color.rgb))==8:
+                    val = str(cell.border.right.color.rgb)
+                    col = (val[2:8])
+                    if col == "000000":
+                        clr = {"red": 1, "green": 1, "blue": 1}
+                    else:
+                        clr = {"red": int(col[0:2], 16) / 255.0, "green": int(col[2:4], 16) / 255.0,
+                            "blue": int(col[4:6], 16) / 255.0}
+                else:
+                    clr = {}
+            border_unit = {
+                'thin': "SOLID",
+                'medium': "SOLID_MEDIUM",
+                'thick': "SOLID_THICK",
+                'dashed': "DASHED",
+                'dotted': "DOTTED",
+                'double': "DOUBLE",
+                'dashDotDot': "DOTTED",
+                'mediumDashDotDot': "DOTTED",
+                'slantDashDot': "dashed",
+                'mediumDashDot': "dashed",
+                'mediumDashed': "dashed",
+                'dashDot': "dashed",
+                'hair': "DOTTED",
+                'None': "NONE"
+            }
+            try:
+                cell.border.right.border_style
+            except AttributeError:
+                st = 'NONE'
+            else:
+                st = border_unit[str(cell.border.right.border_style)]
+
+
+        if border_orientation == "bottom":
+            try:
+                cell.border.bottom.color.rgb
+            except AttributeError:
+                clr = {}
+            else:
+                if len(str(cell.border.bottom.color.rgb))==8:
+                    val = str(cell.border.bottom.color.rgb)
+                    col = (val[2:8])
+                    if col == "000000":
+                        clr = {"red": 1, "green": 1, "blue": 1}
+                    else:
+                        clr = {"red": int(col[0:2], 16) / 255.0, "green": int(col[2:4], 16) / 255.0,
+                            "blue": int(col[4:6], 16) / 255.0}
+                else:
+                    clr = {}
+            border_unit = {
+                'thin': "SOLID",
+                'medium': "SOLID_MEDIUM",
+                'thick': "SOLID_THICK",
+                'dashed': "DASHED",
+                'dotted': "DOTTED",
+                'double': "DOUBLE",
+                'dashDotDot': "DOTTED",
+                'mediumDashDotDot': "DOTTED",
+                'slantDashDot': "dashed",
+                'mediumDashDot': "dashed",
+                'mediumDashed': "dashed",
+                'dashDot': "dashed",
+                'hair': "DOTTED",
+                'None': "NONE"
+            }
+            try:
+                cell.border.bottom.border_style
+            except AttributeError:
+                st = 'NONE'
+            else:
+                st = border_unit[str(cell.border.bottom.border_style)]
+
+        if border_orientation == "left":
+            try:
+                cell.border.left.color.rgb
+            except AttributeError:
+                clr = {}
+            else:
+                if len(str(cell.border.left.color.rgb)) == 8:
+                    val = str(cell.border.left.color.rgb)
+                    col = (val[2:8])
+                    if col == "000000":
+                        clr = {"red": 1, "green": 1, "blue": 1}
+                    else:
+                        clr = {"red": int(col[0:2], 16) / 255.0, "green": int(col[2:4], 16) / 255.0,
+                               "blue": int(col[4:6], 16) / 255.0}
+                else:
+                    clr = {}
+            border_unit = {
+                'thin': "SOLID",
+                'medium': "SOLID_MEDIUM",
+                'thick': "SOLID_THICK",
+                'dashed': "DASHED",
+                'dotted': "DOTTED",
+                'double': "DOUBLE",
+                'dashDotDot': "DOTTED",
+                'mediumDashDotDot': "DOTTED",
+                'slantDashDot': "dashed",
+                'mediumDashDot': "dashed",
+                'mediumDashed': "dashed",
+                'dashDot': "dashed",
+                'hair': "DOTTED",
+                'None': "NONE"
+            }
+            try:
+                cell.border.left.border_style
+            except AttributeError:
+                st = 'NONE'
+            else:
+                st = border_unit[str(cell.border.left.border_style)]
+
+        return {'style': st, 'width': 1, 'color': clr}
+
 
 
 el = Exlib()

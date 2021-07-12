@@ -13,6 +13,8 @@ def htmlColorToJSON(htmlColor):
     return {"red": int(htmlColor[0:2], 16) / 255.0, "green": int(htmlColor[2:4], 16) / 255.0, "blue": int(htmlColor[4:6], 16) / 255.0}
 
 
+borders = ["top", "right", "bottom", "left"]
+
 path = ('test.xlsx')
 sheetid = 0 # id листа
 
@@ -23,8 +25,12 @@ el.sheetID(sheetid)
 # получаем общее количиство строк и столбцев
 rows = el.getRows()
 columns = el.getColumns()
-print(el.getFontColor("D3"))
+
+print(el.getBorder("A1",borders[2]))
 """ тестовая часть
+print(el.getFontColor("D3"))
+print(el.bgColor('AD188'))
+
 print(el.getHeight(1))
 print(el.getWidth(el.columnLetter(1)))
 font = el.getFont('A1')
@@ -45,6 +51,7 @@ print(el.bgColorRed('A1'))
 print(el.bgColorGreen('A1'))
 print(el.bgColorBlue('A1'))
 """
+
 CREDENTIALS_FILE = 'fifth-sunup-319308-14f4f2f32c5a.json'  # Имя файла с закрытым ключом, вы должны подставить свое
 
 """
@@ -69,26 +76,34 @@ access = driveService.permissions().create(
     fileId = spreadsheetId,
     body = {'type': 'user', 'role': 'writer', 'emailAddress': 'dennerblack02@gmail.com'},  # Открываем доступ на редактирование
     fields = 'id'
-).execute()"""
+).execute()
+"""
+
+
+
 # первичная настройка
 ss = Spreadsheet(CREDENTIALS_FILE, debugMode=True)
-ss.create("Первый тестовый документ", "Лист номер один", rows+1, columns+1)
+#ss.create("Первый тестовый документ", "Лист номер один", rows+1, columns+1)
 #ss.shareWithEmailForWriting("dennerblack02@gmail.com")
 # лучше по id чтобы не создавать каждый раз новый документ
-ss.setSpreadsheetById('1hvvyvbc6u9S06e2X4k29pipSZvVNNK4715Txzodyo04')
+ss.setSpreadsheetById('1pRohAKGYrcuRjKoZqByzzRB-eTlx6wvOrGM-nnUR0No')
 
 mergedlist = el.getMerged()
 
 # подготовка значений для отправки(формирование таблицы)
-for column in range(1,columns+1):
+for column in range(1,columns): # как поправишь границы, не забудь добавить +1
     column_letter = el.columnLetter(column)
-    for row in range(1,rows+1):
+    for row in range(1,rows):
         cord = column_letter + str(row)  # return 'A1' (A1 к примеру)
         cords = (column_letter + str(row)+":"+column_letter + str(row)) # return 'A1:A1'
         color = {"red": 0, "green": 0, "blue": 0}
+        bgcolor = {"red": 1, "green": 1, "blue": 1}
         if el.getFontColor(cord) != False: color = htmlColorToJSON(el.getFontColor(cord))
         else: color = {"red": 0, "green": 0, "blue": 0}
-        bodyJSON = {"backgroundColor": htmlColorToJSON(el.bgColor(cord)),
+        if el.bgColor(cord) != False: bgcolor = htmlColorToJSON(el.bgColor(cord))
+        else: bgcolor = {"red": 1, "green": 1, "blue": 1}
+
+        bodyJSON = {"backgroundColor": bgcolor,
                     'textFormat': {'foregroundColor': color,
                                    'fontFamily': el.getFont(cord),
                                    'fontSize': el.getFontSize(cord),
@@ -96,10 +111,23 @@ for column in range(1,columns+1):
                                    'italic': el.getItalic(cord),
                                    'strikethrough': el.getStrikethrough(cord),
                                    'underline': el.getUnderline(cord)}
+
                     }
         ss.prepare_setCellsFormat(cords,bodyJSON)
+
         if el.getNumber(cord) != 'None':
             ss.prepare_setValues(cords, [[el.getNumber(cord)]])
+
+        for orient in range(len(borders)):
+            print(borders[orient])
+            border = {'updateBorders': {'range':
+                                            {'sheetId': ss.sheetId,
+                                             'startRowIndex': row-1,
+                                             'endRowIndex': row,
+                                             'startColumnIndex': column-1,
+                                             'endColumnIndex': column},
+                                        str(borders[orient]): el.getBorder(cord,borders[orient])}}
+            ss.requests.append(border)
 
 format = [{'values':
       [{'userEnteredValue': {'stringValue': 'Ячейка C2'},
@@ -128,17 +156,12 @@ format = [{'values':
                             'hyperlinkDisplayType': 'PLAIN_TEXT'}}]}]
 
 for i in range(len(mergedlist)):
-    #print(str(mergedlist[i]))
     ss.prepare_mergeCells(str(mergedlist[i]))
 
 for col in range(1,columns+1):
-    print(el.getWidth(el.columnLetter(col)))
     ss.prepare_setColumnWidth(col-1, int(el.getWidth(el.columnLetter(col))))
-print (rows)
-print (columns)
 
 for rw in range(1,rows+1):
-    print(int(el.getHeight(rw)))
     ss.prepare_setRowHeight(rw-1, int(el.getHeight(rw)))
 
 # тут запись подготовленных значений в google
