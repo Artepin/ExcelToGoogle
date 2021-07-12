@@ -87,6 +87,7 @@ ss = Spreadsheet(CREDENTIALS_FILE, debugMode=True)
 # лучше по id чтобы не создавать каждый раз новый документ
 ss.setSpreadsheetById('1pRohAKGYrcuRjKoZqByzzRB-eTlx6wvOrGM-nnUR0No')
 
+# список с объедененными зонами
 mergedlist = el.getMerged()
 
 # подготовка значений для отправки(формирование таблицы)
@@ -95,13 +96,17 @@ for column in range(1,columns+1): # как поправишь границы, н
     for row in range(1,rows+1):
         cord = column_letter + str(row)  # return 'A1' (A1 к примеру)
         cords = (column_letter + str(row)+":"+column_letter + str(row)) # return 'A1:A1'
+
         color = {"red": 0, "green": 0, "blue": 0}
         bgcolor = {"red": 1, "green": 1, "blue": 1}
+
         if el.getFontColor(cord) != False: color = htmlColorToJSON(el.getFontColor(cord))
         else: color = {"red": 0, "green": 0, "blue": 0}
+
         if el.bgColor(cord) != False: bgcolor = htmlColorToJSON(el.bgColor(cord))
         else: bgcolor = {"red": 1, "green": 1, "blue": 1}
 
+        # форма стиля ячейки
         bodyJSON = {"backgroundColor": bgcolor,
                     'textFormat': {'foregroundColor': color,
                                    'fontFamily': el.getFont(cord),
@@ -112,20 +117,25 @@ for column in range(1,columns+1): # как поправишь границы, н
                                    'underline': el.getUnderline(cord)}
 
                     }
+
+        # заполняем формат ячейки
         ss.prepare_setCellsFormat(cords,bodyJSON)
 
+        # заполняем значения ячеек
         if el.getNumber(cord) != 'None':
             ss.prepare_setValues(cords, [[el.getNumber(cord)]])
 
+        # заполняем границы
         for orient in range(len(borders)):
             check_unit = {
-                0: border_controller[column - 1][row][2],
+                2: border_controller[column - 1][row][2],
                 1: border_controller[column][row - 1][3],
-                2: border_controller[column - 1][row - 2][0],
+                0: border_controller[column - 1][row - 2][0],
                 3: border_controller[column - 2][row - 1][1],
             }
             if check_unit[orient] != 1:
                 print(borders[orient])
+                # форма стиля граница
                 border = {'updateBorders': {'range':
                                                 {'sheetId': ss.sheetId,
                                                  'startRowIndex': row - 1,
@@ -136,6 +146,7 @@ for column in range(1,columns+1): # как поправишь границы, н
                 ss.requests.append(border)
             border_controller[column - 1][row - 1][orient] = 1
 
+# пример формы заполнения стиля ячейки
 format = [{'values':
       [{'userEnteredValue': {'stringValue': 'Ячейка C2'},
         'effectiveValue': {'stringValue': 'Ячейка C2'},

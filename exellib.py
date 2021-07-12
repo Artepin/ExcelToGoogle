@@ -4,7 +4,6 @@ from openpyxl.worksheet.properties import WorksheetProperties, PageSetupProperti
 from openpyxl.styles import PatternFill, Border, Side, Alignment, Protection, Font
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import Font
-from openpyxl.styles import PatternFill, Border, Side, Alignment, Protection, Font
 
 
 
@@ -19,18 +18,21 @@ class Exlib:
     def sheetID(self,id):
         Exlib.sheetid = id
 
+    # получаем максимальное количество строк
     def getRows(self):
         file = Exlib.fileread
         sheet_id = Exlib.sheetid
         sheet = file.worksheets[sheet_id]
         return(sheet.max_row)
 
+    # то же и с колоннами
     def getColumns(self):
         file = Exlib.fileread
         sheet_id = Exlib.sheetid
         sheet = file.worksheets[sheet_id]
         return(sheet.max_column)
 
+    # читаем данные ячейки
     def getNumber(self, cell1):
         file = Exlib.fileread
         sheet_id = Exlib.sheetid
@@ -39,6 +41,7 @@ class Exlib:
         number = cell.value
         return(number)
 
+    # узнаем букву колоны
     def columnLetter(self, columnnum):
         file = Exlib.fileread
         sheet_id = Exlib.sheetid
@@ -46,6 +49,7 @@ class Exlib:
         column = get_column_letter(columnnum)
         return (column)
 
+    # получаем список всех объедененных зон
     def getMerged(self):
         file = Exlib.fileread
         sheet_id = Exlib.sheetid
@@ -53,6 +57,7 @@ class Exlib:
         mergedlist = sheet.merged_cells.ranges
         return mergedlist
 
+    # эти функции возвращают ширину и высоту ячейки соответсвенно
     def getWidth(self, column):
         file = Exlib.fileread
         sheet_id = Exlib.sheetid
@@ -74,6 +79,8 @@ class Exlib:
 
     ################<<STYLES>>##################
 
+    # тут стили текста
+    # получаем данные о шрифте: Arial, Calibri и т. д.
     def getFont(self, cell1):
         file = Exlib.fileread
         sheet_id = Exlib.sheetid
@@ -82,6 +89,7 @@ class Exlib:
         font = cell.font.name
         return font
 
+    # размер шрифта
     def getFontSize(self, cell1):
         file = Exlib.fileread
         sheet_id = Exlib.sheetid
@@ -90,6 +98,7 @@ class Exlib:
         fontsize = cell.font.size
         return int(fontsize)
 
+    # его цвет
     def getFontColor(self, cell1):
         file = Exlib.fileread
         sheet_id = Exlib.sheetid
@@ -102,6 +111,8 @@ class Exlib:
             return False
         return ret
 
+    # функции далее дают логичиский ответ да/нет, думаю по их названию можно понять,
+    # проверкой чего они являются
     def getBold(self, cell1):
         file = Exlib.fileread
         sheet_id = Exlib.sheetid
@@ -135,6 +146,8 @@ class Exlib:
         if undrlstatus != False:
             return True
 
+    # с текстом и булам покончили, дальше цвет фона ячейки
+    # его можно брать отдельно по каналам
     def bgColorRed(self, cell1):
         file = Exlib.fileread
         sheet_id = Exlib.sheetid
@@ -162,6 +175,7 @@ class Exlib:
         bluevalue = (int(val[6:6 + 2], 16))
         return (bluevalue)
 
+    # или получить весь цвет ячейки
     def bgColor(self, cell1):
         file = Exlib.fileread
         sheet_id = Exlib.sheetid
@@ -177,6 +191,7 @@ class Exlib:
 
     ################<<BORDERS>>##################
 
+    # получаем данные о границе
     def getBorder(self, cell1, border_orientation):
         file = Exlib.fileread
         sheet_id = Exlib.sheetid
