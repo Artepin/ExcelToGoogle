@@ -176,3 +176,15 @@ class Spreadsheet:
         self.requests.append({"updateCells": {"range": self.toGridRange(cellsRange),
                                               "rows": [{"values": [{"userEnteredFormat": cellFormat} for cellFormat in rowFormats]} for rowFormats in formatsJSON],
                                               "fields": fields}})
+    def getData(self, ranges, ssid):
+        """ sheet_metadata = self.service.spreadsheets().get(spreadsheetId=self.sheetId).execute()
+        sheets = sheet_metadata.get('sheets', '')
+        title = sheets[0].get("properties", {}).get("title", "Sheet1")
+        sheet_id = sheets[0].get("properties", {}).get("sheetId", 0)
+        print(sheet_id)"""
+        results = self.service.spreadsheets().values().batchGet(spreadsheetId=ssid,
+                                                           ranges=ranges,
+                                                           valueRenderOption='FORMATTED_VALUE',
+                                                           dateTimeRenderOption='FORMATTED_STRING').execute()
+        sheet_values = results['valueRanges'][0]['values']
+        return sheet_values
