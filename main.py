@@ -4,6 +4,7 @@ import apiclient.discovery
 from oauth2client.service_account import ServiceAccountCredentials
 from exellib import *
 from spreadsheetgoogle import *
+
 import numpy as np
 
 # одключил класс чела из той статьи, перенесу в отдельную библиотеку чуть позже
@@ -16,6 +17,7 @@ def htmlColorToJSON(htmlColor):
 borders = ["top", "right", "bottom", "left"]
 
 path = ('test.xlsx')
+
 sheetid = 0 # id листа
 
 # даем библиотеке знасть с каким файлом работать
@@ -26,8 +28,9 @@ el.sheetID(sheetid)
 rows = el.getRows()
 columns = el.getColumns()
 
-print(el.getBorder("A1",borders[2]))
 """ тестовая часть
+print(el.getBorder("A1",borders[2]))
+
 print(el.getFontColor("D3"))
 print(el.bgColor('AD188'))
 
@@ -54,30 +57,6 @@ print(el.bgColorBlue('A1'))
 
 CREDENTIALS_FILE = 'fifth-sunup-319308-14f4f2f32c5a.json'  # Имя файла с закрытым ключом, вы должны подставить свое
 
-"""
-# Читаем ключи из файла
-credentials = ServiceAccountCredentials.from_json_keyfile_name(CREDENTIALS_FILE, ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive'])
-
-httpAuth = credentials.authorize(httplib2.Http()) # Авторизуемся в системе
-service = apiclient.discovery.build('sheets', 'v4', http = httpAuth) # Выбираем работу с таблицами и 4 версию API
-
-spreadsheet = service.spreadsheets().create(body = {
-    'properties': {'title': 'Первый тестовый документ', 'locale': 'ru_RU'},
-    'sheets': [{'properties': {'sheetType': 'GRID',
-                               'sheetId': 0,
-                               'title': 'Лист номер один',
-                               'gridProperties': {'rowCount': rows, 'columnCount': columns}}}]
-}).execute()
-
-spreadsheetId = spreadsheet['spreadsheetId'] # сохраняем идентификатор файла
-
-driveService = apiclient.discovery.build('drive', 'v3', http = httpAuth) # Выбираем работу с Google Drive и 3 версию API
-access = driveService.permissions().create(
-    fileId = spreadsheetId,
-    body = {'type': 'user', 'role': 'writer', 'emailAddress': 'dennerblack02@gmail.com'},  # Открываем доступ на редактирование
-    fields = 'id'
-).execute()
-"""
 border_controller = np.zeros((columns+1, rows+1, 4))
 
 # первичная настройка
@@ -128,13 +107,13 @@ for column in range(1,columns+1): # как поправишь границы, н
         # заполняем границы
         for orient in range(len(borders)):
             check_unit = {
-                2: border_controller[column - 1][row][2],
+                0: border_controller[column - 1][row-2][2],
                 1: border_controller[column][row - 1][3],
-                0: border_controller[column - 1][row - 2][0],
+                2: border_controller[column - 1][row][0],
                 3: border_controller[column - 2][row - 1][1],
             }
             if check_unit[orient] != 1:
-                print(borders[orient])
+                #print(check_unit[orient])
                 # форма стиля граница
                 border = {'updateBorders': {'range':
                                                 {'sheetId': ss.sheetId,
@@ -144,7 +123,8 @@ for column in range(1,columns+1): # как поправишь границы, н
                                                  'endColumnIndex': column},
                                             str(borders[orient]): el.getBorder(cord, borders[orient])}}
                 ss.requests.append(border)
-            border_controller[column - 1][row - 1][orient] = 1
+                if el.getBorder(cord, borders[orient])['style'] != 'NONE':
+                    border_controller[column - 1][row - 1][orient] = 1
 
 # пример формы заполнения стиля ячейки
 format = [{'values':
@@ -156,7 +136,6 @@ format = [{'values':
                               'textFormat': {'fontSize': 14,
                                              'bold': True,
                                              'italic': True}},
-
         'effectiveFormat': {'backgroundColor': {'red': 1, 'green': 0.6},
 
                             'padding': {'top': 2, 'right': 3, 'bottom': 2, 'left': 3},
@@ -183,5 +162,5 @@ for rw in range(1,rows+1):
     ss.prepare_setRowHeight(rw-1, int(el.getHeight(rw)))
 
 # тут запись подготовленных значений в google
-pprint(ss.requests)
+#pprint(ss.requests)
 ss.runPrepared()

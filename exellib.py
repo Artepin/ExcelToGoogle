@@ -197,7 +197,25 @@ class Exlib:
         sheet_id = Exlib.sheetid
         sheet = file.worksheets[sheet_id]
         cell = sheet[cell1]
-        
+
+        border_unit = {
+            'thin': "SOLID",
+            'medium': "SOLID_MEDIUM",
+            'thick': "SOLID_THICK",
+            'dashed': "DASHED",
+            'dotted': "DOTTED",
+            'double': "DOUBLE",
+            'dashDotDot': "DOTTED",
+            'mediumDashDotDot': "DOTTED",
+            'slantDashDot': "dashed",
+            'mediumDashDot': "dashed",
+            'mediumDashed': "dashed",
+            'dashDot': "dashed",
+            'hair': "DOTTED",
+            'None': "NONE"
+
+        }
+
         if border_orientation == "top":
             try:
                 cell.border.top.color.rgb
@@ -214,22 +232,6 @@ class Exlib:
                             "blue": int(col[4:6], 16) / 255.0}
                 else:
                     clr = {}
-            border_unit = {
-                'thin': "SOLID",
-                'medium': "SOLID_MEDIUM",
-                'thick': "SOLID_THICK",
-                'dashed': "DASHED",
-                'dotted': "DOTTED",
-                'double': "DOUBLE",
-                'dashDotDot': "DOTTED",
-                'mediumDashDotDot': "DOTTED",
-                'slantDashDot': "dashed",
-                'mediumDashDot': "dashed",
-                'mediumDashed': "dashed",
-                'dashDot': "dashed",
-                'hair': "DOTTED",
-                'None': "NONE"
-            }
             try:
                 cell.border.top.border_style
             except AttributeError:
@@ -253,30 +255,12 @@ class Exlib:
                             "blue": int(col[4:6], 16) / 255.0}
                 else:
                     clr = {}
-            border_unit = {
-                'thin': "SOLID",
-                'medium': "SOLID_MEDIUM",
-                'thick': "SOLID_THICK",
-                'dashed': "DASHED",
-                'dotted': "DOTTED",
-                'double': "DOUBLE",
-                'dashDotDot': "DOTTED",
-                'mediumDashDotDot': "DOTTED",
-                'slantDashDot': "dashed",
-                'mediumDashDot': "dashed",
-                'mediumDashed': "dashed",
-                'dashDot': "dashed",
-                'hair': "DOTTED",
-                'None': "NONE"
-            }
             try:
                 cell.border.right.border_style
             except AttributeError:
                 st = 'NONE'
             else:
                 st = border_unit[str(cell.border.right.border_style)]
-
-
         if border_orientation == "bottom":
             try:
                 cell.border.bottom.color.rgb
@@ -293,22 +277,6 @@ class Exlib:
                             "blue": int(col[4:6], 16) / 255.0}
                 else:
                     clr = {}
-            border_unit = {
-                'thin': "SOLID",
-                'medium': "SOLID_MEDIUM",
-                'thick': "SOLID_THICK",
-                'dashed': "DASHED",
-                'dotted': "DOTTED",
-                'double': "DOUBLE",
-                'dashDotDot': "DOTTED",
-                'mediumDashDotDot': "DOTTED",
-                'slantDashDot': "dashed",
-                'mediumDashDot': "dashed",
-                'mediumDashed': "dashed",
-                'dashDot': "dashed",
-                'hair': "DOTTED",
-                'None': "NONE"
-            }
             try:
                 cell.border.bottom.border_style
             except AttributeError:
@@ -332,22 +300,6 @@ class Exlib:
                                "blue": int(col[4:6], 16) / 255.0}
                 else:
                     clr = {}
-            border_unit = {
-                'thin': "SOLID",
-                'medium': "SOLID_MEDIUM",
-                'thick': "SOLID_THICK",
-                'dashed': "DASHED",
-                'dotted': "DOTTED",
-                'double': "DOUBLE",
-                'dashDotDot': "DOTTED",
-                'mediumDashDotDot': "DOTTED",
-                'slantDashDot': "dashed",
-                'mediumDashDot': "dashed",
-                'mediumDashed': "dashed",
-                'dashDot': "dashed",
-                'hair': "DOTTED",
-                'None': "NONE"
-            }
             try:
                 cell.border.left.border_style
             except AttributeError:
