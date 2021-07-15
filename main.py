@@ -101,8 +101,9 @@ if len(excel_data_raw) > 1:
                     break
                 elif temp > half*2:
                     break
-
-                iter2 += 1
+                elif check.count(col_name) == 0:
+                    iter2 += 1
+                    break
             place = half * iter2
             iter *= 2
 print(data_google)
