@@ -55,7 +55,7 @@ print(el.bgColorGreen('A1'))
 print(el.bgColorBlue('A1'))
 """
 
-CREDENTIALS_FILE = 'fifth-sunup-319308-14f4f2f32c5a.json'  # Имя файла с закрытым ключом, вы должны подставить свое
+CREDENTIALS_FILE = 'auth.json'  # Имя файла с закрытым ключом, вы должны подставить свое
 
 border_controller = np.zeros((columns+1, rows+1, 4))
 
