@@ -11,7 +11,7 @@ from spreadsheetgoogle import *
 
 
 def deptControl():
-    CREDENTIALS_FILE = 'auth.json'  # Имя файла с закрытым ключом, вы должны подставить свое
+    CREDENTIALS_FILE = 'auth.json'
     credentials = ServiceAccountCredentials.from_json_keyfile_name(CREDENTIALS_FILE, ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive'])
     httpAuth = credentials.authorize(httplib2.Http()) # Авторизуемся в системе
     service = apiclient.discovery.build('sheets', 'v4', http = httpAuth) # Выбираем работу с таблицами и 4 версию API
@@ -25,14 +25,43 @@ def deptControl():
     ss.setSpreadsheetById(link_id)
 
     spreadsheet = gp.open_by_url(link)
-    worksheetRed = spreadsheet.get_worksheet(1)
+
+    redData = []
+    yellowData = []
+    complData = []
+    complDataRows = []
+    workerName = []
+
+
+    #worksheetCompl = ss.addSheet("Выполненные", 1000, 20)
+
+    try:
+        worksheetRed = spreadsheet.get_worksheet(1).id
+    except AttributeError:
+        worksheetRed = ss.addSheet("Просрочено", 1000, 20)
+
+    try:
+        worksheetYellow = spreadsheet.get_worksheet(2).id
+    except AttributeError:
+        worksheetYellow = ss.addSheet("Подходящие", 1000, 20)
+
+    try:
+        worksheetCompl = spreadsheet.get_worksheet(3).id
+    except AttributeError:
+        worksheetCompl = ss.addSheet("Выполненные", 1000, 20)
+
     worksheet = spreadsheet.get_worksheet(0)
+    worksheetRed = spreadsheet.get_worksheet(1)
+    worksheetYellow = spreadsheet.get_worksheet(2)
+    worksheetCompl = spreadsheet.get_worksheet(3)
+
+    worker_column = worksheet.col_values(3)
+
     column = worksheet.col_values(4)
 
     column_fact = worksheet.col_values(5) # для оптимизации вогнал столбец с датой окончания работы в локальную память
-    # из-за отсутствующих значений в столбце с датой окончания работы, его длина меньше, нужно прировнять
+    # из-за отсутствующих значений в столбце с датой окончания работы, его длина меньше, нужно приравнять
     delta = len(column) - len(column_fact)
-
     for i in range(delta):
         column_fact.append('None')
 
@@ -116,6 +145,10 @@ def deptControl():
                 print(cell)
                 if validDate(cell):
                     print("Work done")
+                    if workerName.count(worker_column[j]) == 0:
+                        workerName.append(worker_column[j])
+                    complData.append(worksheet.row_values(j))
+                    complDataRows.append(j-1)
                 else:
                     print("No date")
                     if isItLate(i):
@@ -126,17 +159,6 @@ def deptControl():
                         print("changed yellow color on "+ cellCoord)
             else:
                 print("Match False")
-
-
-    def copyString(fromString, startCell):
-        valX = worksheet.acell(startCell).row
-        valY = worksheet.acell(startCell).col
-        if worksheet.acell(startCell).value == None:
-            for i in fromString:
-                worksheet.update_cell(valX, valY, i)
-                valY = valY + 1
-        else:
-            print("Value of your cell is not empty")
 
     def copyColumn(fromColumn, startCell):
         #val = worksheet.acell(startCell).value
@@ -149,9 +171,17 @@ def deptControl():
         else:
             print("Value of your cell is not empty")
 
-    #def copyHead(rangeOfHead):
-    prohod(column)
-    ss.runPrepared()
+    def complSheet():
+        rowid = 1
+        for i in range(len(workerName)):
+            ss.copyHeader(rowid,link_id,worksheetCompl.id)
+            rowid += 4
+            for j in range(len(complData)):
+                if complData[j].count(workerName[i]) != 0:
+                    ss.copyRange(complDataRows[j], rowid, link_id, worksheetCompl.id)
+                    rowid += 1
+            rowid += 1
 
-#copyColumn(column,"H2")
-#copyString(stringSheet,"I2")
+    prohod(column)
+    complSheet()
+    ss.runPrepared()

@@ -185,3 +185,61 @@ class Spreadsheet:
                                                            dateTimeRenderOption='FORMATTED_STRING').execute()
         sheet_values = results['valueRanges'][0]['values']
         return sheet_values
+
+    def getDataRaw(self, ranges, ssid):
+        results = self.service.spreadsheets().get(spreadsheetId=ssid,
+                                                           ranges=ranges,
+                                                           includeGridData=True
+                                                           ).execute()
+        return results
+
+    def copyHeader(self, row, ssid, shid):
+        batch_update_spreadsheet_request_body = {
+            "requests": [
+                {
+                    "copyPaste": {
+                        "source": {
+                            "sheetId": 0,
+                            "startRowIndex": 6,
+                            "endRowIndex": 10,
+                            "startColumnIndex": 0,
+                            "endColumnIndex": 6
+                        },
+                        "destination": {
+                            "sheetId": shid,
+                            "startRowIndex": row-1,
+                            "endRowIndex": row+4,
+                            "startColumnIndex": 0,
+                            "endColumnIndex": 6
+                        },
+                        "pasteType": "PASTE_NORMAL"
+                    }
+                }
+            ]
+        }
+        request = self.service.spreadsheets().batchUpdate(spreadsheetId=ssid, body=batch_update_spreadsheet_request_body).execute()
+    def copyRange(self, orig_row, row, ssid, shid):
+        batch_update_spreadsheet_request_body = {
+            "requests": [
+                {
+                    "copyPaste": {
+                        "source": {
+                            "sheetId": 0,
+                            "startRowIndex": orig_row,
+                            "endRowIndex": orig_row+1,
+                            "startColumnIndex": 0,
+                            "endColumnIndex": 6
+                        },
+                        "destination": {
+                            "sheetId": shid,
+                            "startRowIndex": row-1,
+                            "endRowIndex": row,
+                            "startColumnIndex": 0,
+                            "endColumnIndex": 6
+                        },
+                        "pasteType": "PASTE_NORMAL"
+                    }
+                }
+            ]
+        }
+        request = self.service.spreadsheets().batchUpdate(spreadsheetId=ssid, body=batch_update_spreadsheet_request_body).execute()
