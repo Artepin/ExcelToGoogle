@@ -27,10 +27,14 @@ def deptControl():
     spreadsheet = gp.open_by_url(link)
 
     redData = []
+    redDataRows = []
     yellowData = []
+    yellowDataRows = []
     complData = []
     complDataRows = []
     workerName = []
+    workerNameRed = []
+    workerNameYellow = []
 
 
     #worksheetCompl = ss.addSheet("Выполненные", 1000, 20)
@@ -55,11 +59,13 @@ def deptControl():
     worksheetYellow = spreadsheet.get_worksheet(2)
     worksheetCompl = spreadsheet.get_worksheet(3)
 
+    column_1 = worksheet.col_values(1)
+    column_2 = worksheet.col_values(2)
     worker_column = worksheet.col_values(3)
-
     column = worksheet.col_values(4)
-
     column_fact = worksheet.col_values(5) # для оптимизации вогнал столбец с датой окончания работы в локальную память
+    column_6 = worksheet.col_values(6)
+
     # из-за отсутствующих значений в столбце с датой окончания работы, его длина меньше, нужно приравнять
     delta = len(column) - len(column_fact)
     for i in range(delta):
@@ -147,15 +153,44 @@ def deptControl():
                     print("Work done")
                     if workerName.count(worker_column[j]) == 0:
                         workerName.append(worker_column[j])
-                    complData.append(worksheet.row_values(j))
+                    compil = []
+                    compil.append(column_1[j-1])
+                    compil.append(column_2[j-1])
+                    compil.append(worker_column[j-1])
+                    compil.append(column[j-1])
+                    compil.append(column_fact[j-1])
+                    compil.append(column_6[j-1])
+                    complData.append(compil)
                     complDataRows.append(j-1)
                 else:
                     print("No date")
                     if isItLate(i):
                         changeOfColor(cellCoord,"red")
+                        if workerNameRed.count(worker_column[j]) == 0:
+                            workerNameRed.append(worker_column[j])
+                        compil = []
+                        compil.append(column_1[j - 1])
+                        compil.append(column_2[j - 1])
+                        compil.append(worker_column[j - 1])
+                        compil.append(column[j - 1])
+                        compil.append(column_fact[j - 1])
+                        compil.append(column_6[j - 1])
+                        redData.append(compil)
+                        redDataRows.append(j - 1)
                         print("changed red color on "+ cellCoord)
                     else:
                         changeOfColor(cellCoord, "yellow")
+                        if workerNameYellow.count(worker_column[j-1]) == 0:
+                            workerNameYellow.append(worker_column[j-1])
+                        compil = []
+                        compil.append(column_1[j - 1])
+                        compil.append(column_2[j - 1])
+                        compil.append(worker_column[j - 1])
+                        compil.append(column[j - 1])
+                        compil.append(column_fact[j - 1])
+                        compil.append(column_6[j - 1])
+                        yellowData.append(compil)
+                        yellowDataRows.append(j - 1)
                         print("changed yellow color on "+ cellCoord)
             else:
                 print("Match False")
@@ -182,6 +217,31 @@ def deptControl():
                     rowid += 1
             rowid += 1
 
+    def redSheet():
+        rowid = 1
+        for i in range(len(workerNameRed)):
+            ss.copyHeader(rowid,link_id,worksheetRed.id)
+            rowid += 4
+            for j in range(len(redData)):
+                if redData[j].count(workerNameRed[i]) != 0:
+                    ss.copyRange(redDataRows[j], rowid, link_id, worksheetRed.id)
+                    rowid += 1
+            rowid += 1
+
+    def yellowSheet():
+        rowid = 1
+        for i in range(len(workerNameYellow)):
+            ss.copyHeader(rowid,link_id,worksheetYellow.id)
+            rowid += 4
+            for j in range(len(yellowData)):
+                if yellowData[j].count(workerNameYellow[i]) != 0:
+                    ss.copyRange(yellowDataRows[j], rowid, link_id, worksheetYellow.id)
+                    rowid += 1
+            rowid += 1
+
     prohod(column)
+    print(complData)
+    redSheet()
+    yellowSheet()
     complSheet()
     ss.runPrepared()
