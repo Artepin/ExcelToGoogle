@@ -239,6 +239,7 @@ def deptControl():
                     rowid += 1
             rowid += 1
 
+
     prohod(column)
     print(complData)
     redSheet()

@@ -27,6 +27,7 @@ httpAuth = credentials.authorize(httplib2.Http())  # Авторизуемся в
 service = apiclient.discovery.build('sheets', 'v4', http=httpAuth)  # Выбираем работу с таблицами и 4 версию API
 ss = Spreadsheet(CREDENTIALS_FILE, debugMode=False)
 def columnRevise():
+    # !!ВНИМАНИЕ!! перед релизом удалить шаблоны!
     print("введите ссылку на документ")
     # https://docs.google.com/spreadsheets/d/1pRohAKGYrcuRjKoZqByzzRB-eTlx6wvOrGM-nnUR0No/edit#gid=0
     link = "https://docs.google.com/spreadsheets/d/1pRohAKGYrcuRjKoZqByzzRB-eTlx6wvOrGM-nnUR0No/edit#gid=0"  # input()
@@ -37,6 +38,10 @@ def columnRevise():
     # Текст (цэ название столбца!)
     col_name = "Текст"  # input()
     print(col_name)
+    print('введите название столбца, в который необходимо произвести перенос')
+    # Текст (цэ название столбца!)
+    col_name_google = "Текст"  # input()
+    print(col_name_google)
     data_excel = []
     data_google = []
 
@@ -73,7 +78,7 @@ def columnRevise():
             column_letter = el.columnLetter(column)
             cord = column_letter + str(row)  # return 'A1' (A1 к примеру)
             cords = (column_letter + str(row) + ":" + column_letter + str(row))  # return 'A1:A1'
-            if all_sheet[row][column] == col_name:
+            if all_sheet[row][column] == col_name_google:
                 excel_data_raw.append(row + 1)
 
     # эта часть ищет координаты нужных ячеек(столбцев) в гугле
@@ -106,11 +111,11 @@ def columnRevise():
                         data_google.append(el.columnLetter(int(temp + 1)) + str(excel_data_raw[row]))
                         break
 
-                    if check.count(col_name) > 0:
+                    if check.count(col_name_google) > 0:
                         break
                     elif temp > half * 4:
                         break
-                    elif check.count(col_name) == 0:
+                    elif check.count(col_name_google) == 0:
                         iter2 += 1
                         break
                     temp += half
