@@ -2,6 +2,7 @@ from deptControl import *
 from columnRevise import *
 
 def main():
+    print()
     print('Функционал программы:')
     print("1. проверка даты выполнения паботы")
     print("2. сверка столбцев по численными дынными и перенос больших значений")

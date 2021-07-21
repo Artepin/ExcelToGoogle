@@ -4,8 +4,9 @@ import apiclient.discovery
 from oauth2client.service_account import ServiceAccountCredentials
 from exellib import *
 from spreadsheetgoogle import *
+import xlwings as xw
 
-path = ('C:\PycharmProjects\ExcelToGoogle\main.xlsx')
+path = (xw.Book.caller().fullname)
 
 sheetid = 0 # id листа
 
@@ -19,7 +20,7 @@ rows = el.getRows()
 columns = el.getColumns()
 
 # первичная настройка
-CREDENTIALS_FILE = 'C:\\PycharmProjects\\ExcelToGoogle\\auth.json'  # Имя файла с закрытым ключом, вы должны подставить свое
+CREDENTIALS_FILE = 'C:\\PyProj\\ExcelToGoogle\\ExcelToGoogle\\auth.json'  # Имя файла с закрытым ключом, вы должны подставить свое
 credentials = ServiceAccountCredentials.from_json_keyfile_name(CREDENTIALS_FILE,
                                                                ['https://www.googleapis.com/auth/spreadsheets',
                                                                 'https://www.googleapis.com/auth/drive'])

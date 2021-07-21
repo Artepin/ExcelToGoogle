@@ -6,7 +6,9 @@ from exellib import *
 from spreadsheetgoogle import *
 
 import numpy as np
+import xlwings as xw
 
+path = (xw.Book.caller().fullname)
 # одключил класс чела из той статьи, перенесу в отдельную библиотеку чуть позже
 def htmlColorToJSON(htmlColor):
     if htmlColor == "000000":
@@ -16,7 +18,6 @@ def htmlColorToJSON(htmlColor):
 
 borders = ["top", "right", "bottom", "left"]
 
-path = ('test.xlsx')
 
 sheetid = 0 # id листа
 
