@@ -11,13 +11,13 @@ from spreadsheetgoogle import *
 
 
 def deptControl():
-    CREDENTIALS_FILE = 'auth.json'
+    CREDENTIALS_FILE = 'C:\\PycharmProjects\\ExcelToGoogle\\auth.json'
     credentials = ServiceAccountCredentials.from_json_keyfile_name(CREDENTIALS_FILE, ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive'])
     httpAuth = credentials.authorize(httplib2.Http()) # Авторизуемся в системе
     service = apiclient.discovery.build('sheets', 'v4', http = httpAuth) # Выбираем работу с таблицами и 4 версию API
     ss = Spreadsheet(CREDENTIALS_FILE, debugMode=False)
 
-    gp = gspread.service_account(filename='./auth.json')
+    gp = gspread.service_account(filename='./C:\\PycharmProjects\\ExcelToGoogle\\auth.json')
     print("введите ссылку на документ")
     # https://docs.google.com/spreadsheets/d/1EPldFQGirZHS6XplnIk1RlYSFoiNsQi-lB6xqzGnCII/edit#gid=0
     link = "https://docs.google.com/spreadsheets/d/1EPldFQGirZHS6XplnIk1RlYSFoiNsQi-lB6xqzGnCII/edit#gid=0" #input()
