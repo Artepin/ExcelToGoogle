@@ -4,6 +4,7 @@ import apiclient.discovery
 from oauth2client.service_account import ServiceAccountCredentials
 from exellib import *
 from spreadsheetgoogle import *
+import os
 
 import numpy as np
 import xlwings as xw
@@ -56,7 +57,7 @@ print(el.bgColorGreen('A1'))
 print(el.bgColorBlue('A1'))
 """
 
-CREDENTIALS_FILE = 'auth.json'  # Имя файла с закрытым ключом, вы должны подставить свое
+CREDENTIALS_FILE = os.getenv('USERPROFILE') + '\\Documents\\auth.json'
 
 border_controller = np.zeros((columns+1, rows+1, 4))
 

@@ -2,6 +2,7 @@
 import gspread
 import datetime
 import re
+import os
 
 from pprint import pprint
 import httplib2
@@ -11,13 +12,13 @@ from spreadsheetgoogle import *
 
 
 def deptControl():
-    CREDENTIALS_FILE = 'C:\\PycharmProjects\\ExcelToGoogle\\auth.json'
+    CREDENTIALS_FILE = os.getenv('USERPROFILE')+'\\Documents\\auth.json'
     credentials = ServiceAccountCredentials.from_json_keyfile_name(CREDENTIALS_FILE, ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive'])
     httpAuth = credentials.authorize(httplib2.Http()) # Авторизуемся в системе
     service = apiclient.discovery.build('sheets', 'v4', http = httpAuth) # Выбираем работу с таблицами и 4 версию API
     ss = Spreadsheet(CREDENTIALS_FILE, debugMode=False)
 
-    gp = gspread.service_account(filename='./C:\\PycharmProjects\\ExcelToGoogle\\auth.json')
+    gp = gspread.service_account(filename=CREDENTIALS_FILE)
     print("введите ссылку на документ")
     # https://docs.google.com/spreadsheets/d/1EPldFQGirZHS6XplnIk1RlYSFoiNsQi-lB6xqzGnCII/edit#gid=0
     link = "https://docs.google.com/spreadsheets/d/1EPldFQGirZHS6XplnIk1RlYSFoiNsQi-lB6xqzGnCII/edit#gid=0" #input()
@@ -25,6 +26,10 @@ def deptControl():
     ss.setSpreadsheetById(link_id)
 
     spreadsheet = gp.open_by_url(link)
+
+    rowidcompl = 1
+    rowidred = 1
+    rowidyellow = 1
 
     redData = []
     redDataRows = []
@@ -36,7 +41,7 @@ def deptControl():
     workerNameRed = []
     workerNameYellow = []
 
-
+    tasks = 3
     #worksheetCompl = ss.addSheet("Выполненные", 1000, 20)
 
     try:
@@ -59,17 +64,60 @@ def deptControl():
     worksheetYellow = spreadsheet.get_worksheet(2)
     worksheetCompl = spreadsheet.get_worksheet(3)
 
-    column_1 = worksheet.col_values(1)
-    column_2 = worksheet.col_values(2)
-    worker_column = worksheet.col_values(3)
-    column = worksheet.col_values(4)
-    column_fact = worksheet.col_values(5) # для оптимизации вогнал столбец с датой окончания работы в локальную память
-    column_6 = worksheet.col_values(6)
+    column_1 = worksheet.col_values(2)
+    column_2 = worksheet.col_values(3)
+    worker_column = worksheet.col_values(4)
+    column = worksheet.col_values(5)
+    column_fact = worksheet.col_values(6) # для оптимизации вогнал столбец с датой окончания работы в локальную память
+    column_6 = worksheet.col_values(7)
+    try:
+        gen_header = worksheet.find("Генеральный план-график").row
+    except:
+        try:
+            gen_header = worksheet.find("Генеральный план-график ").row
+        except:
+            raise SystemExit(13)
+
+    try:
+        calendar_header = worksheet.find("Календарный ПЛАН-ГРАФИК").row
+    except:
+        try:
+            calendar_header = worksheet.find("Календарный ПЛАН-ГРАФИК ").row
+        except:
+            raise SystemExit(13)
+
+    try:
+        oper_header = worksheet.find("Оперативные задачи").row
+    except:
+        try:
+            oper_header = worksheet.find("Оперативные задачи ").row
+        except:
+            raise SystemExit(13)
+
+    gen_div = 4
+    calendar_div = 5
+    oper_div = 4
 
     # из-за отсутствующих значений в столбце с датой окончания работы, его длина меньше, нужно приравнять
     delta = len(column) - len(column_fact)
     for i in range(delta):
         column_fact.append('None')
+
+    delta = len(column) - len(column_1)
+    for i in range(delta):
+        column_1.append('None')
+
+    delta = len(column) - len(column_2)
+    for i in range(delta):
+        column_2.append('None')
+
+    delta = len(column) - len(worker_column)
+    for i in range(delta):
+        worker_column.append('None')
+
+    delta = len(column) - len(column_6)
+    for i in range(delta):
+        column_6.append('None')
 
     stringSheet = worksheet.row_values(11)
 
@@ -79,7 +127,7 @@ def deptControl():
             date = datetime.date(int(year),int(month),int(day))
             return date
         else:
-            print('Please,input correct date')
+           print('Please,input correct date')
     def dateRazn(data1,data2):
         days = data2 - data1
         return days
@@ -97,12 +145,12 @@ def deptControl():
         matchOtmen = re.search(r'Отменен|отменено|-', data)
         if matchOtmen:
             return True
-        match =re.search(r'\d\d.\d\d.\d{4}',data)
+        match =re.search(r'\d\d.\d\d.\d{4}',data) or re.search(r'\d\d.\d\d.\d{2}',data)
         if match:
-            print("date is valid")
+            #print("date is valid")
             return True
         else:
-            print("date is not valid")
+            #print("date is not valid")
             return False
 
 
@@ -129,69 +177,73 @@ def deptControl():
 
     def isItLate(date):
         dateNow = datetime.date.today()
-        datePlan = dateTransform(date)
+        try:
+            datePlan = dateTransform(date)
+        except:
+            return True
         razn = dateNow - datePlan
         day = razn.days
         if int(day) > 14:
-            print("Red color")
+            #print("Red color")
             return True
         else:
-            print("Yellow color")
+            #print("Yellow color")
             return False
 
-    def prohod(dataColumn):
-        j=0
-        for i in dataColumn:
+    def prohod(dataColumn, header_skip, end):
+        j=header_skip-1
+        for row_number in range(header_skip,end+1):
+            i = dataColumn[row_number]
             j = j + 1
             match = validDate(i)
             if match:
-                print("Match true")
+                #print("Match true")
                 cellCoord = 'E'+str(j)
-                cell = column_fact[j-1] # теперь данные берутся из локального списка
-                print(cell)
+                cell = column_fact[j] # теперь данные берутся из локального списка
+                #print(cell)
                 if validDate(cell):
-                    print("Work done")
+                    #print("Work done")
                     if workerName.count(worker_column[j]) == 0:
                         workerName.append(worker_column[j])
                     compil = []
-                    compil.append(column_1[j-1])
-                    compil.append(column_2[j-1])
-                    compil.append(worker_column[j-1])
-                    compil.append(column[j-1])
-                    compil.append(column_fact[j-1])
-                    compil.append(column_6[j-1])
+                    compil.append(column_1[j])
+                    compil.append(column_2[j])
+                    compil.append(worker_column[j])
+                    compil.append(column[j])
+                    compil.append(column_fact[j])
+                    compil.append(column_6[j])
                     complData.append(compil)
-                    complDataRows.append(j-1)
+                    complDataRows.append(j+1)
                 else:
-                    print("No date")
-                    if isItLate(i):
-                        changeOfColor(cellCoord,"red")
+                    #print(i)
+                    if isItLate(i)or(i != '-'):
+                        #changeOfColor(cellCoord,"red")
                         if workerNameRed.count(worker_column[j]) == 0:
                             workerNameRed.append(worker_column[j])
                         compil = []
-                        compil.append(column_1[j - 1])
-                        compil.append(column_2[j - 1])
-                        compil.append(worker_column[j - 1])
-                        compil.append(column[j - 1])
-                        compil.append(column_fact[j - 1])
-                        compil.append(column_6[j - 1])
+                        compil.append(column_1[j])
+                        compil.append(column_2[j])
+                        compil.append(worker_column[j])
+                        compil.append(column[j])
+                        compil.append(column_fact[j])
+                        compil.append(column_6[j])
                         redData.append(compil)
-                        redDataRows.append(j - 1)
-                        print("changed red color on "+ cellCoord)
+                        redDataRows.append(j+1)
+                        #print("changed red color on "+ cellCoord)
                     else:
-                        changeOfColor(cellCoord, "yellow")
-                        if workerNameYellow.count(worker_column[j-1]) == 0:
-                            workerNameYellow.append(worker_column[j-1])
+                        #changeOfColor(cellCoord, "yellow")
+                        if workerNameYellow.count(worker_column[j]) == 0:
+                            workerNameYellow.append(worker_column[j])
                         compil = []
-                        compil.append(column_1[j - 1])
-                        compil.append(column_2[j - 1])
-                        compil.append(worker_column[j - 1])
-                        compil.append(column[j - 1])
-                        compil.append(column_fact[j - 1])
-                        compil.append(column_6[j - 1])
+                        compil.append(column_1[j])
+                        compil.append(column_2[j])
+                        compil.append(worker_column[j])
+                        compil.append(column[j])
+                        compil.append(column_fact[j])
+                        compil.append(column_6[j])
                         yellowData.append(compil)
-                        yellowDataRows.append(j - 1)
-                        print("changed yellow color on "+ cellCoord)
+                        yellowDataRows.append(j+1)
+                        #print("changed yellow color on "+ cellCoord)
             else:
                 print("Match False")
 
@@ -206,43 +258,86 @@ def deptControl():
         else:
             print("Value of your cell is not empty")
 
-    def complSheet():
-        rowid = 1
+
+
+    def complSheet(row_start, div, rowidcompl):
+        ss.copyHeader(rowidcompl,link_id,worksheetCompl.id,row_start, div, worksheet.id)
+        rowidcompl += div
         for i in range(len(workerName)):
-            ss.copyHeader(rowid,link_id,worksheetCompl.id)
-            rowid += 4
             for j in range(len(complData)):
                 if complData[j].count(workerName[i]) != 0:
-                    ss.copyRange(complDataRows[j], rowid, link_id, worksheetCompl.id)
-                    rowid += 1
-            rowid += 1
+                    ss.copyRange(complDataRows[j], rowidcompl, link_id, worksheetCompl.id, worksheet.id)
+                    rowidcompl += 1
+            rowidcompl += 1
+        return rowidcompl + 1
 
-    def redSheet():
-        rowid = 1
+    def redSheet(row_start, div, rowidred):
+        ss.copyHeader(rowidred,link_id,worksheetRed.id,row_start, div, worksheet.id)
+        rowidred += div
         for i in range(len(workerNameRed)):
-            ss.copyHeader(rowid,link_id,worksheetRed.id)
-            rowid += 4
             for j in range(len(redData)):
-                if redData[j].count(workerNameRed[i]) != 0:
-                    ss.copyRange(redDataRows[j], rowid, link_id, worksheetRed.id)
-                    rowid += 1
-            rowid += 1
+                print(rowidred)
 
-    def yellowSheet():
-        rowid = 1
+                if redData[j].count(workerNameRed[i]) != 0:
+                    ss.copyRange(redDataRows[j], rowidred, link_id, worksheetRed.id, worksheet.id)
+                    rowidred += 1
+        return rowidred + 1
+
+    def yellowSheet(row_start, div,rowidyellow):
+        ss.copyHeader(rowidyellow,link_id,worksheetYellow.id,row_start, div, worksheet.id)
+        rowidyellow += div
         for i in range(len(workerNameYellow)):
-            ss.copyHeader(rowid,link_id,worksheetYellow.id)
-            rowid += 4
             for j in range(len(yellowData)):
                 if yellowData[j].count(workerNameYellow[i]) != 0:
-                    ss.copyRange(yellowDataRows[j], rowid, link_id, worksheetYellow.id)
-                    rowid += 1
-            rowid += 1
+                    ss.copyRange(yellowDataRows[j], rowidyellow, link_id, worksheetYellow.id, worksheet.id)
+                    rowidyellow += 1
+        return rowidyellow + 1
 
 
-    prohod(column)
-    print(complData)
-    redSheet()
-    yellowSheet()
-    complSheet()
+    print(gen_header)
+    print(calendar_header)
+    print(oper_header)
+    prohod(column,gen_header+gen_div-1, calendar_header)
+
+    print(redData)
+    print(workerNameRed)
+    print(redDataRows)
+    rowidred = redSheet(gen_header, gen_div, rowidred)
+    rowidyellow = yellowSheet(gen_header, gen_div,rowidyellow)
+    rowidcompl = complSheet(gen_header, gen_div, rowidcompl)
+    print(rowidred)
+
+    redData = []
+    redDataRows = []
+    yellowData = []
+    yellowDataRows = []
+    complData = []
+    complDataRows = []
+    workerName = []
+    workerNameRed = []
+    workerNameYellow = []
+
+    print(calendar_header+calendar_div)
+    prohod(column, calendar_header + calendar_div, oper_header)
+    print(redData)
+    print(workerNameRed)
+    rowidred = redSheet(calendar_header, calendar_div, rowidred)
+    rowidyellow = yellowSheet(calendar_header, calendar_div, rowidyellow)
+    rowidcompl = complSheet(calendar_header, calendar_div, rowidcompl)
+    redData = []
+    redDataRows = []
+    yellowData = []
+    yellowDataRows = []
+    complData = []
+    complDataRows = []
+    workerName = []
+    workerNameRed = []
+    workerNameYellow = []
+
+    prohod(column, oper_header + oper_div, len(column))
+    print(redData)
+    print(workerNameRed)
+    redSheet(oper_header, oper_div, rowidred)
+    yellowSheet(oper_header, oper_div, rowidyellow)
+    complSheet(oper_header, oper_div, rowidcompl)
     ss.runPrepared()

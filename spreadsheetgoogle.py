@@ -193,23 +193,23 @@ class Spreadsheet:
                                                            ).execute()
         return results
 
-    def copyHeader(self, row, ssid, shid):
+    def copyHeader(self, row, ssid, shid, row_start, div, zid):  # normal div = 4
         batch_update_spreadsheet_request_body = {
             "requests": [
                 {
                     "copyPaste": {
                         "source": {
-                            "sheetId": 0,
-                            "startRowIndex": 6,
-                            "endRowIndex": 10,
-                            "startColumnIndex": 0,
+                            "sheetId": zid,
+                            "startRowIndex": row_start-1,
+                            "endRowIndex": row_start+div-1,
+                            "startColumnIndex": 1,
                             "endColumnIndex": 6
                         },
                         "destination": {
                             "sheetId": shid,
-                            "startRowIndex": row-1,
-                            "endRowIndex": row+4,
-                            "startColumnIndex": 0,
+                            "startRowIndex": row,
+                            "endRowIndex": row+div,
+                            "startColumnIndex": 1,
                             "endColumnIndex": 6
                         },
                         "pasteType": "PASTE_NORMAL"
@@ -218,23 +218,23 @@ class Spreadsheet:
             ]
         }
         request = self.service.spreadsheets().batchUpdate(spreadsheetId=ssid, body=batch_update_spreadsheet_request_body).execute()
-    def copyRange(self, orig_row, row, ssid, shid):
+    def copyRange(self, orig_row, row, ssid, shid, zid):
         batch_update_spreadsheet_request_body = {
             "requests": [
                 {
                     "copyPaste": {
                         "source": {
-                            "sheetId": 0,
-                            "startRowIndex": orig_row,
-                            "endRowIndex": orig_row+1,
-                            "startColumnIndex": 0,
+                            "sheetId": zid,
+                            "startRowIndex": orig_row-1,
+                            "endRowIndex": orig_row,
+                            "startColumnIndex": 1,
                             "endColumnIndex": 6
                         },
                         "destination": {
                             "sheetId": shid,
                             "startRowIndex": row-1,
                             "endRowIndex": row,
-                            "startColumnIndex": 0,
+                            "startColumnIndex": 1,
                             "endColumnIndex": 6
                         },
                         "pasteType": "PASTE_NORMAL"
