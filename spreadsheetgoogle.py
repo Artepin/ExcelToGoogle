@@ -195,8 +195,7 @@ class Spreadsheet:
 
     def copyHeader(self, row, ssid, shid, row_start, div, zid):  # normal div = 4
         batch_update_spreadsheet_request_body = {
-            "requests": [
-                {
+
                     "copyPaste": {
                         "source": {
                             "sheetId": zid,
@@ -214,14 +213,12 @@ class Spreadsheet:
                         },
                         "pasteType": "PASTE_NORMAL"
                     }
-                }
-            ]
+
         }
-        request = self.service.spreadsheets().batchUpdate(spreadsheetId=ssid, body=batch_update_spreadsheet_request_body).execute()
+        self.requests.append(batch_update_spreadsheet_request_body)
     def copyRange(self, orig_row, row, ssid, shid, zid):
         batch_update_spreadsheet_request_body = {
-            "requests": [
-                {
+
                     "copyPaste": {
                         "source": {
                             "sheetId": zid,
@@ -239,7 +236,6 @@ class Spreadsheet:
                         },
                         "pasteType": "PASTE_NORMAL"
                     }
-                }
-            ]
+
         }
-        request = self.service.spreadsheets().batchUpdate(spreadsheetId=ssid, body=batch_update_spreadsheet_request_body).execute()
+        self.requests.append(batch_update_spreadsheet_request_body)
