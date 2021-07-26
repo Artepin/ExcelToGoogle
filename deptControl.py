@@ -76,7 +76,10 @@ def deptControl():
         try:
             gen_header = worksheet.find("Генеральный план-график ").row
         except:
-            raise SystemExit(13)
+            try:
+                gen_header = worksheet.find("Генеральный план график").row
+            except:
+                raise SystemExit(13)
 
     try:
         calendar_header = worksheet.find("Календарный ПЛАН-ГРАФИК").row
@@ -84,7 +87,7 @@ def deptControl():
         try:
             calendar_header = worksheet.find("Календарный ПЛАН-ГРАФИК ").row
         except:
-            raise SystemExit(13)
+            raise SystemExit(14)
 
     try:
         oper_header = worksheet.find("Оперативные задачи").row
@@ -92,9 +95,9 @@ def deptControl():
         try:
             oper_header = worksheet.find("Оперативные задачи ").row
         except:
-            raise SystemExit(13)
+            raise SystemExit(15)
 
-    gen_div = 4
+    gen_div = 5
     calendar_div = 5
     oper_div = 4
 
@@ -276,8 +279,6 @@ def deptControl():
         rowidred += div
         for i in range(len(workerNameRed)):
             for j in range(len(redData)):
-                print(rowidred)
-
                 if redData[j].count(workerNameRed[i]) != 0:
                     ss.copyRange(redDataRows[j], rowidred, link_id, worksheetRed.id, worksheet.id)
                     rowidred += 1

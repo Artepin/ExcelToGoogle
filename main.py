@@ -1,5 +1,5 @@
 from deptControl import *
-from columnRevise import *
+#from columnRevise import *
 
 def main():
     print()
@@ -7,11 +7,11 @@ def main():
     print("1. проверка даты выполнения паботы")
     print("2. сверка столбцев по численными дынными и перенос больших значений")
     print("Введите номер подходящей функции")
-    choise = int(input())
+    choise = 1#int(input())
 
     choise_unit = {
         1: deptControl,
-        2: columnRevise
+        #2: columnRevise
     }
     if choise in choise_unit:
         choise_unit[choise]()
