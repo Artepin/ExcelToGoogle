@@ -216,6 +216,7 @@ class Spreadsheet:
 
         }
         self.requests.append(batch_update_spreadsheet_request_body)
+
     def copyRange(self, orig_row, row, ssid, shid, zid):
         batch_update_spreadsheet_request_body = {
 
