@@ -97,7 +97,7 @@ def deptControl():
         except:
             raise SystemExit(15)
 
-    gen_div = 5
+    gen_div = 4
     calendar_div = 5
     oper_div = 4
 
@@ -194,7 +194,7 @@ def deptControl():
             return False
 
     def prohod(dataColumn, header_skip, end):
-        j=header_skip-1
+        j=header_skip-2
         for row_number in range(header_skip,end+1):
             i = dataColumn[row_number]
             j = j + 1
