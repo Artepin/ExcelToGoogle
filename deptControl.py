@@ -270,7 +270,7 @@ def deptControl():
             for j in range(len(complData)):
                 if complData[j].count(workerName[i]) != 0:
                     ss.copyRange(complDataRows[j], rowidcompl, link_id, worksheetCompl.id, worksheet.id)
-            rowidcompl += 1
+                    rowidcompl += 1
         return rowidcompl + 1
 
     def redSheet(row_start, div, rowidred):
